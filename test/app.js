@@ -19,6 +19,7 @@ import {
   testGetBooksSortByPriceDesc,
   testGetBooksSortByTitleAsc,
   testGetBooksSortByTitleDesc,
+  testGetNonExistantBook,
   testUpdateBook,
 } from "./books/index.js";
 import {
@@ -28,6 +29,7 @@ import {
   testGetAuthorsSortByFirstNameAsc,
   testGetAuthorsSortByIDDesc,
   testGetAuthorsSortByLastNameDesc,
+  testGetNonExistantAuthor,
   testUpdateAuthor,
 } from "./authors/index.js";
 
@@ -111,6 +113,10 @@ describe("Bookstore API", function () {
       testGetBook(chai, server, done);
     });
 
+    it("Should return not found if book doesn't exist", function (done) {
+      testGetNonExistantBook(chai, server, done);
+    });
+
     it("Should update a book", function (done) {
       testUpdateBook(chai, server, done);
     });
@@ -143,6 +149,10 @@ describe("Bookstore API", function () {
 
     it("Should sort the list of authors by firstName_asc", function (done) {
       testGetAuthorsSortByFirstNameAsc(chai, server, done);
+    });
+
+    it("Should return null if not getting an exiting author", function (done) {
+      testGetNonExistantAuthor(chai, server, done);
     });
   });
 });

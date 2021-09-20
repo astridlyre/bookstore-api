@@ -57,7 +57,7 @@ booksRouter.get("/:id", parseID, async function getBook(req, res, next) {
       attributes: ["title", "isbn", "genre", "description", "price", "id"],
     });
     if (!book) {
-      return res.json({ book: {} });
+      return res.status(404).json({ book: null });
     }
     return res.json({ book });
   } catch (error) {
@@ -89,7 +89,9 @@ booksRouter.get(
   async function getBookAuthors(req, res, next) {
     try {
       const book = await Book.findByPk(res.locals.id);
-      if (!book) return res.json({ book: {} });
+      if (!book) {
+        return res.status(404).json({ book: null });
+      }
       return res.json({ book });
     } catch (error) {
       next(error);
@@ -104,7 +106,9 @@ booksRouter.get(
   async function getBookReviews(req, res, next) {
     try {
       const book = await Book.findByPk(res.locals.id);
-      if (!book) return res.json({ book: {} });
+      if (!book) {
+        return res.status(404).json({ book: null });
+      }
       return res.json({ book });
     } catch (error) {
       next(error);

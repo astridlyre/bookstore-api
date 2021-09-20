@@ -62,7 +62,9 @@ authorsRouter.get("/:id", parseID, async function getAuthor(req, res, next) {
         "id",
       ],
     });
-    if (!author) return res.json({ author: {} });
+    if (!author) {
+      return res.status(404).json({ author: null });
+    }
     return res.json({ author });
   } catch (error) {
     next(error);
@@ -91,6 +93,9 @@ authorsRouter.get(
   async function getAuthorBooks(req, res, next) {
     try {
       const author = await Author.findByPk(res.locals.id);
+      if (!author) {
+        return res.status(404).json({ author: null });
+      }
       return res.json({ author });
     } catch (error) {
       next(error);

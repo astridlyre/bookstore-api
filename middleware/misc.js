@@ -10,7 +10,7 @@ export function errorHandler(error, req, res, next) {
     return res.status(error.status || 500).json({
       errors: error.errors
         ? error.errors.map((error) => error.message)
-        : [error],
+        : [error.message],
     });
   }
   return res.status(500).json({

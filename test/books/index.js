@@ -162,3 +162,12 @@ export function testGetBooksSortByPriceDesc(chai, server, done) {
     done();
   });
 }
+
+export function testGetNonExistantBook(chai, server, done) {
+  chai.request(server).get("/books/890483").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(404);
+    expect(res.body.book).to.equal(null);
+    done();
+  });
+}

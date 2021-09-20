@@ -89,3 +89,12 @@ export function testGetAuthorsSortByFirstNameAsc(chai, server, done) {
     done();
   });
 }
+
+export function testGetNonExistantAuthor(chai, server, done) {
+  chai.request(server).get("/authors/831890").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(404);
+    expect(res.body.author).to.equal(null);
+    done();
+  });
+}
