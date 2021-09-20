@@ -21,6 +21,15 @@ import {
   testGetBooksSortByTitleDesc,
   testUpdateBook,
 } from "./books/index.js";
+import {
+  testCreateAuthor,
+  testGetAuthor,
+  testGetAuthors,
+  testGetAuthorsSortByFirstNameAsc,
+  testGetAuthorsSortByIDDesc,
+  testGetAuthorsSortByLastNameDesc,
+  testUpdateAuthor,
+} from "./authors/index.js";
 
 chai.use(chaiHttp);
 
@@ -104,6 +113,36 @@ describe("Bookstore API", function () {
 
     it("Should update a book", function (done) {
       testUpdateBook(chai, server, done);
+    });
+  });
+
+  describe("Authors API", function () {
+    it("Should return a list of authors", function (done) {
+      testGetAuthors(chai, server, done);
+    });
+
+    it("Should create a new author", function (done) {
+      testCreateAuthor(chai, server, done);
+    });
+
+    it("Should return the data on a sepcific author", function (done) {
+      testGetAuthor(chai, server, done);
+    });
+
+    it("Should update the data on a specific author", function (done) {
+      testUpdateAuthor(chai, server, done);
+    });
+
+    it("Should return a list of authors sorted by id_desc", function (done) {
+      testGetAuthorsSortByIDDesc(chai, server, done);
+    });
+
+    it("Should sort the list of authors by lastName_desc", function (done) {
+      testGetAuthorsSortByLastNameDesc(chai, server, done);
+    });
+
+    it("Should sort the list of authors by firstName_asc", function (done) {
+      testGetAuthorsSortByFirstNameAsc(chai, server, done);
     });
   });
 });

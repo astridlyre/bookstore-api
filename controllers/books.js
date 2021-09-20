@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Book from "../models/Book.js";
+import { Book } from "../models/index.js";
 import Sequelize from "sequelize";
 import { parseID } from "../middleware/misc.js";
 import { validateCreateBook, validateUpdateBook } from "../schema/books.js";
@@ -21,7 +21,7 @@ booksRouter.get(
     try {
       const books = await Book.findAll({
         ...res.locals.query,
-        attributes: { exclude: ["createdAt", "updatedAt"] },
+        attributes: ["title", "isbn", "genre", "description", "price", "id"],
       });
       return res.json({ books });
     } catch (error) {
@@ -43,7 +43,7 @@ booksRouter.post("/", async function createBook(req, res, next) {
   } catch (error) {
     if (error.name === "SequelizeValidationError") {
       return res.status(400).json({
-        error: error.errors.map((error) => error.message),
+        errors: error.errors.map((error) => error.message),
       });
     }
     next(error);
@@ -54,7 +54,7 @@ booksRouter.post("/", async function createBook(req, res, next) {
 booksRouter.get("/:id", parseID, async function getBook(req, res, next) {
   try {
     const book = await Book.findByPk(res.locals.id, {
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+      attributes: ["title", "isbn", "genre", "description", "price", "id"],
     });
     if (!book) {
       return res.json({ book: {} });
@@ -81,5 +81,35 @@ booksRouter.put("/:id", parseID, async function updateBook(req, res, next) {
     next(error);
   }
 });
+
+// GET => Returns the author(s) of a specific book (TODO)
+booksRouter.get(
+  "/:id/authors",
+  parseID,
+  async function getBookAuthors(req, res, next) {
+    try {
+      const book = await Book.findByPk(res.locals.id);
+      if (!book) return res.json({ book: {} });
+      return res.json({ book });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// GET => Returns user reviews for a specific book (TODO)
+booksRouter.get(
+  "/:id/reviews",
+  parseID,
+  async function getBookReviews(req, res, next) {
+    try {
+      const book = await Book.findByPk(res.locals.id);
+      if (!book) return res.json({ book: {} });
+      return res.json({ book });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 export default booksRouter;

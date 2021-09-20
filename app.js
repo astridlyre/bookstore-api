@@ -8,7 +8,7 @@ import {
   unknownEndpoint,
 } from "./middleware/misc.js";
 import rateLimiter from "./middleware/rateLimiter.js";
-import { booksRouter, pingRouter } from "./controllers/index.js";
+import { authorsRouter, booksRouter, pingRouter } from "./controllers/index.js";
 
 export default function buildServer() {
   const app = express();
@@ -26,6 +26,7 @@ export default function buildServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use("/ping", pingRouter);
+  app.use("/authors", authorsRouter);
   app.use("/books", booksRouter);
   app.use(unknownEndpoint);
   app.use(errorHandler);
