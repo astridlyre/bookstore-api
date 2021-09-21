@@ -27,6 +27,7 @@ import {
   testGetBooksWithPerPageAndPage,
   testGetBooksWithPerPageAndPageAndSortByIdDesc,
   testGetNonExistantBook,
+  testSearchBook,
   testUpdateBook,
 } from "./books/index.js";
 import {
@@ -180,6 +181,10 @@ describe("Bookstore API", function () {
 
     it("Should throw an error with invalid page", function (done) {
       testGetBooksWithInvalidPage(chai, server, done);
+    });
+
+    it("Should search for a book", function (done) {
+      testSearchBook(chai, server, done);
     });
   });
 

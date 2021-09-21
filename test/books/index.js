@@ -268,3 +268,14 @@ export function testGetBookReviews(chai, server, done) {
     done();
   });
 }
+
+export function testSearchBook(chai, server, done) {
+  chai.request(server).get("/books?q=Kippums").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(200);
+    expect(res.body.books).to.be.a("array");
+    expect(res.body.books.length).to.equal(1);
+    expect(res.body.books[0].title).to.equal("The Great Kippums Caper");
+    done();
+  });
+}
