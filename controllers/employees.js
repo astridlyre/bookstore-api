@@ -7,23 +7,19 @@ import {
   validateCreateEmployee,
   validateUpdateEmployee,
 } from "../schema/employees.js";
+import {
+  addressAttributes,
+  employeeAttributes,
+  phoneNumberAttributes,
+} from "../lib/attributes.js";
 
 const employeesRouter = Router();
-const attributes = [
-  "firstName",
-  "lastName",
-  "birthDate",
-  "email",
-  "hireDate",
-  "employeeNumber",
-  "id",
-];
 const include = [
   {
     model: Address,
-    attributes: ["line1", "line2", "city", "state", "country", "postalCode"],
+    attributes: addressAttributes,
   },
-  { model: PhoneNumber, attributes: ["main", "fax", "cell", "home"] },
+  { model: PhoneNumber, attributes: phoneNumberAttributes },
 ];
 
 // GET => Returns a full list of employees working across all stores
@@ -34,7 +30,7 @@ employeesRouter.get(
     try {
       const employees = await Employee.findAll({
         ...res.locals.query,
-        attributes,
+        attributes: employeeAttributes,
         include,
       });
       return res.json({ employees });
@@ -54,20 +50,18 @@ employeesRouter.post("/", function validateBody(req, res, next) {
   next();
 }, async function (req, res, next) {
   try {
-    const newEmployee = await Employee.create(req.body);
-    await Promise.all([
-      Address.create({ ...req.body.address, employeeId: newEmployee.id }),
-      PhoneNumber.create({
-        ...req.body.phoneNumber,
-        employeeId: newEmployee.id,
-      }),
-    ]);
+    const newEmployee = await Employee.create(req.body, {
+      include: [{ association: Employee.Address }, {
+        association: Employee.PhoneNumber,
+      }],
+    });
     const result = await Employee.findByPk(newEmployee.id, {
-      attributes,
+      attributes: employeeAttributes,
       include,
     });
     return res.status(201).json({ employee: result });
   } catch (error) {
+    console.log(error);
     handleValidationError(error, res);
     next(error);
   }
@@ -80,7 +74,7 @@ employeesRouter.get(
   async function getEmployee(req, res, next) {
     try {
       const employee = await Employee.findByPk(res.locals.id, {
-        attributes,
+        attributes: employeeAttributes,
         include,
       });
       if (!employee) return res.status(404).json({ employee: null });
@@ -120,7 +114,7 @@ employeesRouter.put("/:id", parseID, function validateBody(req, res, next) {
     }
     await Promise.all(updates);
     const updatedEmployee = await Employee.findByPk(res.locals.id, {
-      attributes,
+      attributes: employeeAttributes,
       include,
     });
     if (!updatedEmployee) return res.status(404).json({ employee: null });

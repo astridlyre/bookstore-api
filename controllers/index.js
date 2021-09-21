@@ -4,6 +4,7 @@ import clientsRouter from "./clients.js";
 import employeesRouter from "./employees.js";
 import pingRouter from "./ping.js";
 import storesRouter from "./stores.js";
+import salesRouter from "./sales.js";
 import reviewsRouter from "./reviews.js";
 
 export {
@@ -13,5 +14,6 @@ export {
   employeesRouter,
   pingRouter,
   reviewsRouter,
+  salesRouter,
   storesRouter,
 };

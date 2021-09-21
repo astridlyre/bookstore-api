@@ -17,18 +17,18 @@ Book.hasMany(Review);
 Author.hasMany(Book);
 
 Store.hasMany(Employee);
-Store.hasOne(Address);
-Store.hasOne(PhoneNumber);
+Store.Address = Store.hasOne(Address);
+Store.PhoneNumber = Store.hasOne(PhoneNumber);
 Store.belongsToMany(Book, { through: Copy });
 
 Employee.belongsTo(Store);
-Employee.hasOne(Address);
-Employee.hasOne(PhoneNumber);
+Employee.Address = Employee.hasOne(Address);
+Employee.PhoneNumber = Employee.hasOne(PhoneNumber);
 
 Client.hasMany(Review);
 Client.hasMany(Sale);
-Client.hasOne(Address);
-Client.hasOne(PhoneNumber);
+Client.Address = Client.hasOne(Address);
+Client.PhoneNumber = Client.hasOne(PhoneNumber);
 
 Sale.hasMany(Book);
 Sale.belongsTo(Employee);

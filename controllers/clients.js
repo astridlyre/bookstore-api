@@ -7,15 +7,19 @@ import {
   validateUpdateClient,
 } from "../schema/clients.js";
 import { formatError } from "../schema/index.js";
+import {
+  addressAttributes,
+  clientAttributes,
+  phoneNumberAttributes,
+} from "../lib/attributes.js";
 
 const clientsRouter = Router();
-const attributes = ["firstName", "lastName", "email", "id"];
 const include = [
   {
     model: Address,
-    attributes: ["line1", "line2", "city", "state", "country", "postalCode"],
+    attributes: addressAttributes,
   },
-  { model: PhoneNumber, attributes: ["main", "fax", "cell", "home"] },
+  { model: PhoneNumber, attributes: phoneNumberAttributes },
 ];
 
 // GET => Lists clients ordered alphabetically by name
@@ -25,7 +29,7 @@ clientsRouter.get(
   async function getClients(req, res, next) {
     try {
       const clients = await Client.findAll({
-        attributes,
+        attributes: clientAttributes,
         include,
       });
       return res.json({ clients });
@@ -45,12 +49,15 @@ clientsRouter.post("/", function validateBody(req, res, next) {
   next();
 }, async function createClient(req, res, next) {
   try {
-    const newClient = await Client.create(req.body);
-    await Promise.all([
-      Address.create({ ...req.body.address, clientId: newClient.id }),
-      PhoneNumber.create({ ...req.body.phoneNumber, clientId: newClient.id }),
-    ]);
-    const result = await Client.findByPk(newClient.id, { attributes, include });
+    const newClient = await Client.create(req.body, {
+      include: [{ association: Client.Address }, {
+        association: Client.PhoneNumber,
+      }],
+    });
+    const result = await Client.findByPk(newClient.id, {
+      attributes: clientAttributes,
+      include,
+    });
     return res.status(201).json({ client: result });
   } catch (error) {
     handleValidationError(error, res);
@@ -62,7 +69,7 @@ clientsRouter.post("/", function validateBody(req, res, next) {
 clientsRouter.get("/:id", parseID, async function getClient(req, res, next) {
   try {
     const client = await Client.findByPk(res.locals.id, {
-      attributes,
+      attributes: clientAttributes,
       include,
     });
     if (!client) return res.status(404).json({ client: null });
@@ -99,7 +106,7 @@ clientsRouter.put("/:id", parseID, function validateBody(req, res, next) {
     }
     await Promise.all(updates);
     const updatedClient = await Client.findByPk(res.locals.id, {
-      attributes,
+      attributes: clientAttributes,
       include,
     });
     if (!updatedClient) return res.status(404).json({ client: null });

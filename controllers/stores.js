@@ -4,22 +4,19 @@ import { handleValidationError, parseID } from "../middleware/misc.js";
 import { validateCreateStore, validateUpdateStore } from "../schema/stores.js";
 import { validateGetBooksQuery } from "../schema/books.js";
 import { formatError } from "../schema/index.js";
+import {
+  addressAttributes,
+  phoneNumberAttributes,
+  storeAttributes,
+} from "../lib/attributes.js";
 
 const storesRouter = Router();
-const attributes = ["name", "id"];
 const include = [
   {
     model: Address,
-    attributes: [
-      "line1",
-      "line2",
-      "city",
-      "state",
-      "country",
-      "postalCode",
-    ],
+    attributes: addressAttributes,
   },
-  { model: PhoneNumber, attributes: ["main", "fax", "cell", "home"] },
+  { model: PhoneNumber, attributes: phoneNumberAttributes },
 ];
 
 // GET => Returns the list of stores
@@ -27,7 +24,7 @@ storesRouter.get("/", async function getStores(req, res, next) {
   try {
     const stores = await Store.findAll({
       ...res.locals.query,
-      attributes,
+      attributes: storeAttributes,
       include,
     });
     return res.json({ stores });
@@ -46,13 +43,13 @@ storesRouter.post("/", function validateBody(req, res, next) {
   next();
 }, async function createStore(req, res, next) {
   try {
-    const newStore = await Store.create(req.body, { attributes });
-    await Promise.all([
-      newStore.createAddress(req.body.address),
-      newStore.createPhoneNumber(req.body.phoneNumber),
-    ]);
+    const newStore = await Store.create(req.body, {
+      include: [{ association: Store.Address }, {
+        association: Store.PhoneNumber,
+      }],
+    });
     const result = await Store.findByPk(newStore.id, {
-      attributes: ["name", "id"],
+      attributes: storeAttributes,
       include: include,
     });
     return res.status(201).json({ store: result });
@@ -65,7 +62,10 @@ storesRouter.post("/", function validateBody(req, res, next) {
 // GET => Returns the data on a specific store
 storesRouter.get("/:id", parseID, async function getStore(req, res, next) {
   try {
-    const store = await Store.findByPk(res.locals.id, { attributes, include });
+    const store = await Store.findByPk(res.locals.id, {
+      attributes: storeAttributes,
+      include,
+    });
     if (!store) return res.status(404).json({ store: null });
     return res.json({ store });
   } catch (error) {
@@ -101,7 +101,7 @@ storesRouter.put("/:id", parseID, function validateBody(req, res, next) {
     }
     await Promise.all(updates);
     const updatedStore = await Store.findByPk(res.locals.id, {
-      attributes,
+      attributes: storeAttributes,
       include,
     });
     if (!updatedStore) return res.status(404).json({ store: null });

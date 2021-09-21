@@ -5,9 +5,9 @@ import { handleValidationError, parseID } from "../middleware/misc.js";
 import { validateCreateBook, validateUpdateBook } from "../schema/books.js";
 import { formatError } from "../schema/index.js";
 import { createGetBooksQuery } from "../lib/queries.js";
+import { bookAttributes } from "../lib/attributes.js";
 
 const booksRouter = Router();
-const attributes = ["title", "isbn", "genre", "description", "price", "id"];
 
 // GET => Lists and searches all books.
 // Attributes:
@@ -21,7 +21,10 @@ booksRouter.get(
   createGetBooksQuery,
   async function getBooks(req, res, next) {
     try {
-      const books = await Book.findAll({ ...res.locals.query, attributes });
+      const books = await Book.findAll({
+        ...res.locals.query,
+        attributes: bookAttributes,
+      });
       return res.json({ books });
     } catch (error) {
       console.log(error);
@@ -51,7 +54,9 @@ booksRouter.post("/", async function validateBody(req, res, next) {
 // GET => Returns information about a specific book
 booksRouter.get("/:id", parseID, async function getBook(req, res, next) {
   try {
-    const book = await Book.findByPk(res.locals.id, { attributes });
+    const book = await Book.findByPk(res.locals.id, {
+      attributes: bookAttributes,
+    });
     if (!book) {
       return res.status(404).json({ book: null });
     }

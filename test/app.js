@@ -70,6 +70,7 @@ import {
   testCreateReview,
   testCreateReviewWithInvalidStar,
 } from "./reviews/index.js";
+import { testCreateSale, testGetSales } from "./sales/index.js";
 
 chai.use(chaiHttp);
 
@@ -329,6 +330,16 @@ describe("Bookstore API", function () {
   describe("Book Reviews API", function () {
     it("Should get the reviews for a book", function (done) {
       testGetBookReviews(chai, server, done);
+    });
+  });
+
+  describe("Sales API", function () {
+    it("Should create a sale", function (done) {
+      testCreateSale(chai, server, done);
+    });
+
+    it("Should list all sales", function (done) {
+      testGetSales(chai, server, done);
     });
   });
 });

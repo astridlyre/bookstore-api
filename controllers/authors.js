@@ -7,16 +7,9 @@ import {
   validateCreateAuthor,
   validateUpdateAuthor,
 } from "../schema/authors.js";
+import { authorAttributes } from "../lib/attributes.js";
 
 const authorsRouter = Router();
-const attributes = [
-  "firstName",
-  "lastName",
-  "imageUrl",
-  "website",
-  "id",
-  "description",
-];
 
 // GET => Returns a list of authors. Attributes:
 //  "q": free-text search on author's info
@@ -29,7 +22,10 @@ authorsRouter.get(
   createGetAuthorsQuery,
   async function getAuthors(req, res, next) {
     try {
-      const authors = await Author.findAll({ ...res.locals.query, attributes });
+      const authors = await Author.findAll({
+        ...res.locals.query,
+        attributes: authorAttributes,
+      });
       return res.json({ authors });
     } catch (error) {
       next(error);
@@ -58,7 +54,9 @@ authorsRouter.post("/", async function validateBody(req, res, next) {
 // GET => Get information on a specific author
 authorsRouter.get("/:id", parseID, async function getAuthor(req, res, next) {
   try {
-    const author = await Author.findByPk(res.locals.id, { attributes });
+    const author = await Author.findByPk(res.locals.id, {
+      attributes: authorAttributes,
+    });
     if (!author) return res.status(404).json({ author: null });
     return res.json({ author });
   } catch (error) {
