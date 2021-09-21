@@ -98,3 +98,37 @@ export function testGetNonExistantAuthor(chai, server, done) {
     done();
   });
 }
+
+export function testGetAuthorsPerPage(chai, server, done) {
+  chai.request(server).get("/authors?perpage=1").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(200);
+    expect(res.body.authors).to.be.a("array");
+    expect(res.body.authors.length).to.equal(1);
+    done();
+  });
+}
+
+export function testGetAuthorsPerPageAndPage(chai, server, done) {
+  chai.request(server).get("/authors?perpage=1&page=1").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(200);
+    expect(res.body.authors).to.be.a("array");
+    expect(res.body.authors.length).to.equal(1);
+    expect(res.body.authors[0].id).to.equal(2);
+    done();
+  });
+}
+
+export function testGetAuthorsPerPageAndPageSortByLastName(chai, server, done) {
+  chai.request(server).get("/authors?perpage=1&page=1&sort=lastName_asc").end(
+    (err, res) => {
+      if (err) throw err;
+      expect(res.status).to.equal(200);
+      expect(res.body.authors).to.be.a("array");
+      expect(res.body.authors.length).to.equal(1);
+      expect(res.body.authors[0].lastName).to.equal("Burton");
+      done();
+    },
+  );
+}

@@ -19,6 +19,11 @@ import {
   testGetBooksSortByPriceDesc,
   testGetBooksSortByTitleAsc,
   testGetBooksSortByTitleDesc,
+  testGetBooksWithInvalidPage,
+  testGetBooksWithInvalidSortKey,
+  testGetBooksWithPerPage,
+  testGetBooksWithPerPageAndPage,
+  testGetBooksWithPerPageAndPageAndSortByIdDesc,
   testGetNonExistantBook,
   testUpdateBook,
 } from "./books/index.js";
@@ -26,12 +31,22 @@ import {
   testCreateAuthor,
   testGetAuthor,
   testGetAuthors,
+  testGetAuthorsPerPage,
+  testGetAuthorsPerPageAndPage,
+  testGetAuthorsPerPageAndPageSortByLastName,
   testGetAuthorsSortByFirstNameAsc,
   testGetAuthorsSortByIDDesc,
   testGetAuthorsSortByLastNameDesc,
   testGetNonExistantAuthor,
   testUpdateAuthor,
 } from "./authors/index.js";
+import {
+  testCreateStore,
+  testGetStore,
+  testGetStores,
+  testUpdateStore,
+  testUpdateStoreWithError,
+} from "./stores/index.js";
 
 chai.use(chaiHttp);
 
@@ -97,6 +112,18 @@ describe("Bookstore API", function () {
       testGetBooksSortByPriceDesc(chai, server, done);
     });
 
+    it("Should allow setting max number of results", function (done) {
+      testGetBooksWithPerPage(chai, server, done);
+    });
+
+    it("Should allow chosing which page of results", function (done) {
+      testGetBooksWithPerPageAndPage(chai, server, done);
+    });
+
+    it("Should support pagination and sorting", function (done) {
+      testGetBooksWithPerPageAndPageAndSortByIdDesc(chai, server, done);
+    });
+
     it("Should create a new book and save it to the database", function (done) {
       testCreateBook(chai, server, done);
     });
@@ -120,6 +147,14 @@ describe("Bookstore API", function () {
     it("Should update a book", function (done) {
       testUpdateBook(chai, server, done);
     });
+
+    it("Should throw an error with invalid sort key", function (done) {
+      testGetBooksWithInvalidSortKey(chai, server, done);
+    });
+
+    it("Should throw an error with invalid page", function (done) {
+      testGetBooksWithInvalidPage(chai, server, done);
+    });
   });
 
   describe("Authors API", function () {
@@ -127,11 +162,29 @@ describe("Bookstore API", function () {
       testGetAuthors(chai, server, done);
     });
 
+    it("Should return a list of authors limited perpage", function (done) {
+      testGetAuthorsPerPage(chai, server, done);
+    });
+
+    it("Should return a list of authors limited perpage with page", function (
+      done,
+    ) {
+      testGetAuthorsPerPageAndPage(chai, server, done);
+    });
+
     it("Should create a new author", function (done) {
       testCreateAuthor(chai, server, done);
     });
 
-    it("Should return the data on a sepcific author", function (done) {
+    it(
+      "Should return a list of authors sorted by last name, limited perpage " +
+        "and with the page selected",
+      function (done) {
+        testGetAuthorsPerPageAndPageSortByLastName(chai, server, done);
+      },
+    );
+
+    it("Should return the data on a specific author", function (done) {
       testGetAuthor(chai, server, done);
     });
 
@@ -153,6 +206,28 @@ describe("Bookstore API", function () {
 
     it("Should return null if not getting an exiting author", function (done) {
       testGetNonExistantAuthor(chai, server, done);
+    });
+  });
+
+  describe("Stores API", function () {
+    it("Should return a list of stores", function (done) {
+      testGetStores(chai, server, done);
+    });
+
+    it("Should create a new store", function (done) {
+      testCreateStore(chai, server, done);
+    });
+
+    it("Should get a single store", function (done) {
+      testGetStore(chai, server, done);
+    });
+
+    it("Should update a store", function (done) {
+      testUpdateStore(chai, server, done);
+    });
+
+    it("Should throw error with invalid update", function (done) {
+      testUpdateStoreWithError(chai, server, done);
     });
   });
 });

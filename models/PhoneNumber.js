@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import db from "../lib/db.js";
 
-const PhoneNumbers = db.define("phoneNumbers", {
+const PhoneNumber = db.define("phoneNumber", {
   main: {
     type: Sequelize.DataTypes.STRING,
   },
@@ -16,4 +16,4 @@ const PhoneNumbers = db.define("phoneNumbers", {
   },
 });
 
-export default PhoneNumbers;
+export default PhoneNumber;

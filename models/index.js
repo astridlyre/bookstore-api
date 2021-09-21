@@ -6,7 +6,7 @@ import Client from "./Client.js";
 import BookSale from "./BookSale.js";
 import Review from "./Review.js";
 import Address from "./Address.js";
-import PhoneNumbers from "./PhoneNumbers.js";
+import PhoneNumber from "./PhoneNumber.js";
 
 Book.belongsToMany(Author, { through: "bookAuthor" });
 Book.belongsToMany(BookSale, { through: "bookBookSale" });
@@ -16,15 +16,15 @@ Author.hasMany(Book);
 
 Store.hasMany(Employee);
 Store.hasOne(Address);
-Store.hasOne(PhoneNumbers);
+Store.hasOne(PhoneNumber);
 Employee.belongsTo(Store);
 Employee.hasOne(Address);
-Employee.hasOne(PhoneNumbers);
+Employee.hasOne(PhoneNumber);
 
 Client.hasMany(Review);
 Client.hasMany(BookSale);
 Client.hasOne(Address);
-Client.hasOne(PhoneNumbers);
+Client.hasOne(PhoneNumber);
 
 BookSale.hasMany(Book);
 BookSale.belongsTo(Employee);
@@ -37,6 +37,10 @@ Employee.hasMany(BookSale);
 Review.belongsTo(Book);
 Review.belongsTo(Client);
 
+Address.belongsTo(Client);
+Address.belongsTo(Store);
+Address.belongsTo(Employee);
+
 export {
   Address,
   Author,
@@ -44,7 +48,7 @@ export {
   BookSale,
   Client,
   Employee,
-  PhoneNumbers,
+  PhoneNumber,
   Review,
   Store,
 };

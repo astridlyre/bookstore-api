@@ -6,11 +6,11 @@ export function errorHandler(error, req, res, next) {
   if (res.headersSent) {
     return next(error);
   }
-  if (process.env.NODE_ENV === "development") {
+  if (/^(development|test)$/.test(process.env.NODE_ENV)) {
     return res.status(error.status || 500).json({
       errors: error.errors
         ? error.errors.map((error) => error.message)
-        : [error.message],
+        : [{ message: error.message ?? "Something went wrong" }],
     });
   }
   return res.status(500).json({

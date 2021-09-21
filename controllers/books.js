@@ -3,6 +3,7 @@ import { Book } from "../models/index.js";
 import Sequelize from "sequelize";
 import { parseID } from "../middleware/misc.js";
 import { validateCreateBook, validateUpdateBook } from "../schema/books.js";
+import { formatError } from "../schema/index.js";
 import { createGetBooksQuery } from "../lib/queries.js";
 
 const booksRouter = Router();
@@ -32,12 +33,15 @@ booksRouter.get(
 );
 
 // POST => Creates a new book and saves it in the database
-booksRouter.post("/", async function createBook(req, res, next) {
+booksRouter.post("/", async function validateBody(req, res, next) {
+  if (!validateCreateBook(req.body)) {
+    return res.status(400).json({
+      errors: validateCreateBook.errors.map(formatError),
+    });
+  }
+  next();
+}, async function createBook(req, res, next) {
   try {
-    const valid = validateCreateBook(req.body);
-    if (!valid) {
-      return res.status(400).json({ errors: validateCreateBook.errors });
-    }
     const newBook = await Book.create(req.body);
     return res.status(201).json({ book: newBook });
   } catch (error) {
@@ -66,12 +70,15 @@ booksRouter.get("/:id", parseID, async function getBook(req, res, next) {
 });
 
 // PUT => Updates the information on a book
-booksRouter.put("/:id", parseID, async function updateBook(req, res, next) {
+booksRouter.put("/:id", parseID, async function validateBody(req, res, next) {
+  if (!validateUpdateBook(req.body)) {
+    return res.status(400).json({
+      errors: validateUpdateBook.errors.map(formatError),
+    });
+  }
+  next();
+}, async function updateBook(req, res, next) {
   try {
-    const valid = validateUpdateBook(req.body);
-    if (!valid) {
-      return next({ errors: validateUpdateBook.errors });
-    }
     const [, updatedBookArray] = await Book.update(req.body, {
       where: { id: res.locals.id },
       returning: true,

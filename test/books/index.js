@@ -171,3 +171,67 @@ export function testGetNonExistantBook(chai, server, done) {
     done();
   });
 }
+
+export function testGetBooksWithPerPage(chai, server, done) {
+  chai.request(server).get("/books?perpage=1").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(200);
+    expect(res.body.books).to.be.a("array");
+    expect(res.body.books.length).to.equal(1);
+    done();
+  });
+}
+
+export function testGetBooksWithPerPageAndPage(chai, server, done) {
+  chai.request(server).get("/books?perpage=1&page=1").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(200);
+    expect(res.body.books).to.be.a("array");
+    expect(res.body.books.length).to.equal(1);
+    expect(res.body.books[0].id).to.equal(2);
+    done();
+  });
+}
+
+export function testGetBooksWithPerPageAndPageAndSortByIdDesc(
+  chai,
+  server,
+  done,
+) {
+  chai.request(server).get("/books?sort=id_desc&perpage=1&page=1").end(
+    (err, res) => {
+      if (err) throw err;
+      expect(res.status).to.equal(200);
+      expect(res.body.books).to.be.a("array");
+      expect(res.body.books.length).to.equal(1);
+      expect(res.body.books[0].id).to.equal(2);
+      done();
+    },
+  );
+}
+
+export function testGetBooksWithInvalidSortKey(chai, server, done) {
+  chai.request(server).get("/books?sort=cats").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(400);
+    expect(res.body.errors).to.be.a("array");
+    expect(res.body.errors.length).to.equal(1);
+    expect(res.body.errors[0].message).to.equal(
+      "invalid sort direction 'cats'",
+    );
+    done();
+  });
+}
+
+export function testGetBooksWithInvalidPage(chai, server, done) {
+  chai.request(server).get("/books?page=cats").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(400);
+    expect(res.body.errors).to.be.a("array");
+    expect(res.body.errors.length).to.equal(1);
+    expect(res.body.errors[0].message).to.equal(
+      "'page' must be integer",
+    );
+    done();
+  });
+}

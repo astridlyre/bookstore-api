@@ -2,6 +2,11 @@ import { Router } from "express";
 import { Author } from "../models/index.js";
 import { parseID } from "../middleware/misc.js";
 import { createGetAuthorsQuery } from "../lib/queries.js";
+import { formatError } from "../schema/index.js";
+import {
+  validateCreateAuthor,
+  validateUpdateAuthor,
+} from "../schema/authors.js";
 
 const authorsRouter = Router();
 
@@ -35,7 +40,14 @@ authorsRouter.get(
 );
 
 // POST => Creates a new author
-authorsRouter.post("/", async function createAuthor(req, res, next) {
+authorsRouter.post("/", async function validateBody(req, res, next) {
+  if (!validateCreateAuthor(req.body)) {
+    return res.status(400).json({
+      errors: validateCreateAuthor.errors.map(formatError),
+    });
+  }
+  next();
+}, async function createAuthor(req, res, next) {
   try {
     const newAuthor = await Author.create(req.body);
     return res.status(201).json({ author: newAuthor });
@@ -72,7 +84,14 @@ authorsRouter.get("/:id", parseID, async function getAuthor(req, res, next) {
 });
 
 // PUT => Updates the data on a specific author
-authorsRouter.put("/:id", parseID, async function updateAuthor(req, res, next) {
+authorsRouter.put("/:id", parseID, async function validateBody(req, res, next) {
+  if (!validateUpdateAuthor(req.body)) {
+    return res.status(400).json({
+      errors: validateUpdateAuthor.errors.map(formatError),
+    });
+  }
+  next();
+}, async function updateAuthor(req, res, next) {
   try {
     const [, updatedAuthorArray] = await Author.update(req.body, {
       where: {

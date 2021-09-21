@@ -13,7 +13,8 @@ export function testThrowError(chai, server, done) {
   chai.request(server).get("/throwerror").end((err, res) => {
     expect(res.status).to.equal(500);
     expect(res.body.errors).to.be.a("array");
-    expect(res.body.errors[0].message).to.equal("Something went wrong");
+    expect(res.body.errors[0]).to.be.a("object");
+    expect(res.body.errors[0].message).to.equal("This is a test error");
     done();
   });
 }
