@@ -47,6 +47,15 @@ import {
   testUpdateStore,
   testUpdateStoreWithError,
 } from "./stores/index.js";
+import {
+  testCreateEmployee,
+  testCreateEmployeeWithMissingFields,
+  testGetEmployee,
+  testGetEmployeePerPageWithPage,
+  testGetEmployees,
+  testGetEmployeesSortByLastNameDesc,
+  testUpdateEmployee,
+} from "./employees/index.js";
 
 chai.use(chaiHttp);
 
@@ -228,6 +237,38 @@ describe("Bookstore API", function () {
 
     it("Should throw error with invalid update", function (done) {
       testUpdateStoreWithError(chai, server, done);
+    });
+  });
+
+  describe("Employees API", function () {
+    it("Should return a list of employees", function (done) {
+      testGetEmployees(chai, server, done);
+    });
+
+    it("Should create a new employee", function (done) {
+      testCreateEmployee(chai, server, done);
+    });
+
+    it("Should return a list of employees sorted by lastName_desc", function (
+      done,
+    ) {
+      testGetEmployeesSortByLastNameDesc(chai, server, done);
+    });
+
+    it("Should get a single employee by ID", function (done) {
+      testGetEmployee(chai, server, done);
+    });
+
+    it("Should update an employee", function (done) {
+      testUpdateEmployee(chai, server, done);
+    });
+
+    it("Should support pagination and perpage on listing", function (done) {
+      testGetEmployeePerPageWithPage(chai, server, done);
+    });
+
+    it("Should not create an employee with missing fields", function (done) {
+      testCreateEmployeeWithMissingFields(chai, server, done);
     });
   });
 });

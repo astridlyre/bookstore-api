@@ -7,6 +7,7 @@ import { formatError } from "../schema/index.js";
 import { createGetBooksQuery } from "../lib/queries.js";
 
 const booksRouter = Router();
+const attributes = ["title", "isbn", "genre", "description", "price", "id"];
 
 // GET => Lists and searches all books.
 // Attributes:
@@ -20,10 +21,7 @@ booksRouter.get(
   createGetBooksQuery,
   async function getBooks(req, res, next) {
     try {
-      const books = await Book.findAll({
-        ...res.locals.query,
-        attributes: ["title", "isbn", "genre", "description", "price", "id"],
-      });
+      const books = await Book.findAll({ ...res.locals.query, attributes });
       return res.json({ books });
     } catch (error) {
       console.log(error);
@@ -57,9 +55,7 @@ booksRouter.post("/", async function validateBody(req, res, next) {
 // GET => Returns information about a specific book
 booksRouter.get("/:id", parseID, async function getBook(req, res, next) {
   try {
-    const book = await Book.findByPk(res.locals.id, {
-      attributes: ["title", "isbn", "genre", "description", "price", "id"],
-    });
+    const book = await Book.findByPk(res.locals.id, { attributes });
     if (!book) {
       return res.status(404).json({ book: null });
     }

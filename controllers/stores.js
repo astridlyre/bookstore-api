@@ -5,6 +5,8 @@ import { validateCreateStore, validateUpdateStore } from "../schema/stores.js";
 import { validateGetBooksQuery } from "../schema/books.js";
 import { formatError } from "../schema/index.js";
 
+const storesRouter = Router();
+const attributes = ["name", "id"];
 const include = [
   {
     model: Address,
@@ -20,15 +22,13 @@ const include = [
   { model: PhoneNumber, attributes: ["main", "fax", "cell", "home"] },
 ];
 
-const storesRouter = Router();
-
 // GET => Returns the list of stores
 storesRouter.get("/", async function getStores(req, res, next) {
   try {
     const stores = await Store.findAll({
       ...res.locals.query,
-      attributes: ["name", "id"],
-      include: include,
+      attributes,
+      include,
     });
     return res.json({ stores });
   } catch (error) {
@@ -46,11 +46,11 @@ storesRouter.post("/", function validateBody(req, res, next) {
   next();
 }, async function createStore(req, res, next) {
   try {
-    const newStore = await Store.create({ name: req.body.name }, {
-      attributes: ["name", "id"],
-    });
-    await newStore.createAddress(req.body.address);
-    await newStore.createPhoneNumber(req.body.phoneNumber);
+    const newStore = await Store.create(req.body, { attributes });
+    await Promise.all([
+      newStore.createAddress(req.body.address),
+      newStore.createPhoneNumber(req.body.phoneNumber),
+    ]);
     const result = await Store.findByPk(newStore.id, {
       attributes: ["name", "id"],
       include: include,
@@ -64,10 +64,7 @@ storesRouter.post("/", function validateBody(req, res, next) {
 // GET => Returns the data on a specific store
 storesRouter.get("/:id", parseID, async function getStore(req, res, next) {
   try {
-    const store = await Store.findByPk(res.locals.id, {
-      attributes: ["name", "id"],
-      include: include,
-    });
+    const store = await Store.findByPk(res.locals.id, { attributes, include });
     if (!store) return res.status(404).json({ store: {} });
     return res.json({ store });
   } catch (error) {
@@ -103,8 +100,8 @@ storesRouter.put("/:id", parseID, function validateBody(req, res, next) {
     }
     await Promise.all(updates);
     const updatedStore = await Store.findByPk(res.locals.id, {
-      attributes: ["name", "id"],
-      include: include,
+      attributes,
+      include,
     });
     return res.json({ store: updatedStore });
   } catch (error) {
