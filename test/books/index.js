@@ -257,3 +257,14 @@ export function testGetBooksWithInvalidPage(chai, server, done) {
     done();
   });
 }
+
+export function testGetBookReviews(chai, server, done) {
+  chai.request(server).get("/books/1/reviews").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(200);
+    expect(res.body.reviews).to.be.a("array");
+    expect(res.body.reviews.length).to.equal(1);
+    expect(res.body.reviews[0].text).to.equal("This book is awesome");
+    done();
+  });
+}

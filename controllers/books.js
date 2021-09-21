@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Book } from "../models/index.js";
+import { Book, Client, Review } from "../models/index.js";
 import Sequelize from "sequelize";
 import { handleValidationError, parseID } from "../middleware/misc.js";
 import { validateCreateBook, validateUpdateBook } from "../schema/books.js";
@@ -99,17 +99,21 @@ booksRouter.get(
   },
 );
 
-// GET => Returns user reviews for a specific book (TODO)
+// GET => Returns user reviews for a specific book
 booksRouter.get(
   "/:id/reviews",
   parseID,
   async function getBookReviews(req, res, next) {
     try {
-      const book = await Book.findByPk(res.locals.id);
-      if (!book) {
-        return res.status(404).json({ book: null });
-      }
-      return res.json({ book });
+      const reviews = await Review.findAll({
+        where: {
+          bookId: res.locals.id,
+        },
+        include: [{ model: Client, attributes: ["firstName", "lastName"] }],
+        order: [["createdAt", "DESC"]],
+      });
+      if (!reviews) return res.status(404).json({ reviews: [] });
+      return res.json({ reviews });
     } catch (error) {
       next(error);
     }

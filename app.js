@@ -14,6 +14,7 @@ import {
   clientsRouter,
   employeesRouter,
   pingRouter,
+  reviewsRouter,
   storesRouter,
 } from "./controllers/index.js";
 
@@ -38,6 +39,7 @@ export default function buildServer() {
   app.use("/clients", clientsRouter);
   app.use("/employees", employeesRouter);
   app.use("/stores", storesRouter);
+  app.use("/reviews", reviewsRouter);
   app.use(unknownEndpoint);
   app.use(errorHandler);
   return app;

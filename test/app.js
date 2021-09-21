@@ -13,6 +13,7 @@ import {
   testCreateBookWithMissingProperties,
   testCreateBookWithMissingTitle,
   testGetBook,
+  testGetBookReviews,
   testGetBooks,
   testGetBooksFilterByGenre,
   testGetBooksSortByGenreDesc,
@@ -64,6 +65,10 @@ import {
   testGetInvalidClient,
   testUpdateClient,
 } from "./clients/index.js";
+import {
+  testCreateReview,
+  testCreateReviewWithInvalidStar,
+} from "./reviews/index.js";
 
 chai.use(chaiHttp);
 
@@ -303,6 +308,22 @@ describe("Bookstore API", function () {
 
     it("Should return null if client not found", function (done) {
       testGetInvalidClient(chai, server, done);
+    });
+  });
+
+  describe("Reviews API", function () {
+    it("Should create a review", function (done) {
+      testCreateReview(chai, server, done);
+    });
+
+    it("Should not create a review with invalid star rating", function (done) {
+      testCreateReviewWithInvalidStar(chai, server, done);
+    });
+  });
+
+  describe("Book Reviews API", function () {
+    it("Should get the reviews for a book", function (done) {
+      testGetBookReviews(chai, server, done);
     });
   });
 });

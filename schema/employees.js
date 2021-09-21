@@ -1,14 +1,20 @@
-import createValidator, { baseQuery } from "./index.js";
+import createValidator, {
+  addressSchema,
+  baseQuery,
+  phoneNumberSchema,
+} from "./index.js";
 
 const base = {
   type: "object",
   properties: {
     firstName: { type: "string" },
     lastName: { type: "string" },
-    birthDate: { type: "string" },
+    birthDate: { type: "string", format: "date" },
     email: { type: "string" },
-    hireDate: { type: "string" },
+    hireDate: { type: "string", format: "date" },
     employeeNumber: { type: "integer" },
+    address: { ...addressSchema },
+    phoneNumber: { ...phoneNumberSchema },
   },
 };
 
