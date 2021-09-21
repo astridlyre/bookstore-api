@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Book } from "../models/index.js";
 import Sequelize from "sequelize";
-import { parseID } from "../middleware/misc.js";
+import { handleValidationError, parseID } from "../middleware/misc.js";
 import { validateCreateBook, validateUpdateBook } from "../schema/books.js";
 import { formatError } from "../schema/index.js";
 import { createGetBooksQuery } from "../lib/queries.js";
@@ -43,11 +43,7 @@ booksRouter.post("/", async function validateBody(req, res, next) {
     const newBook = await Book.create(req.body);
     return res.status(201).json({ book: newBook });
   } catch (error) {
-    if (error.name === "SequelizeValidationError") {
-      return res.status(400).json({
-        errors: error.errors.map((error) => error.message),
-      });
-    }
+    handleValidationError(error, res);
     next(error);
   }
 });
@@ -79,8 +75,9 @@ booksRouter.put("/:id", parseID, async function validateBody(req, res, next) {
       where: { id: res.locals.id },
       returning: true,
     });
-    return res.json({ book: updatedBookArray[0] });
+    return res.json({ book: updatedBookArray[0] ?? null });
   } catch (error) {
+    handleValidationError(error, res);
     next(error);
   }
 });

@@ -15,7 +15,7 @@ export function testGetBooks(chai, server, done) {
 export function testCreateBook(chai, server, done) {
   const newBook = {
     title: "Buggsy's New Book",
-    isbn: "184389821890219",
+    isbn: "978-4-4692-6859-1",
     genre: "childrens",
     description: "Learn to count the fun way, with Buggsy!",
     price: 789,
@@ -35,7 +35,7 @@ export function testCreateBook(chai, server, done) {
 
 export function testCreateBookWithMissingTitle(chai, server, done) {
   const newBook = {
-    isbn: "918380921890",
+    isbn: "978-6-7792-0163-3",
     genre: "fake",
     description: "hello",
     price: 1,
@@ -47,6 +47,27 @@ export function testCreateBookWithMissingTitle(chai, server, done) {
       expect(res.body.errors).to.be.a("array");
       expect(res.body.errors[0].message).to.equal(
         "must have required property 'title'",
+      );
+      done();
+    },
+  );
+}
+
+export function testCreateBookWithInvalidISBN(chai, server, done) {
+  const newBook = {
+    isbn: "21928920898",
+    title: "My ISBN is Invalid",
+    genre: "fake",
+    description: "hello",
+    price: 1,
+  };
+  chai.request(server).post("/books").type("json").send(newBook).end(
+    (err, res) => {
+      if (err) throw err;
+      expect(res.status).to.equal(400);
+      expect(res.body.errors).to.be.a("array");
+      expect(res.body.errors[0].message).to.equal(
+        `'isbn' must match format "isbn"`,
       );
       done();
     },
@@ -94,6 +115,7 @@ export function testUpdateBook(chai, server, done) {
     (err, res) => {
       if (err) throw err;
       expect(res.status).to.equal(200);
+      expect(res.body.book).to.be.a("object");
       expect(res.body.book.title).to.equal(updatedBook.title);
       done();
     },

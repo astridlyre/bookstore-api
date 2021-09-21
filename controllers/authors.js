@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Author } from "../models/index.js";
-import { parseID } from "../middleware/misc.js";
+import { handleValidationError, parseID } from "../middleware/misc.js";
 import { createGetAuthorsQuery } from "../lib/queries.js";
 import { formatError } from "../schema/index.js";
 import {
@@ -50,11 +50,7 @@ authorsRouter.post("/", async function validateBody(req, res, next) {
     const newAuthor = await Author.create(req.body);
     return res.status(201).json({ author: newAuthor });
   } catch (error) {
-    if (error.name === "SequelizeValidationError") {
-      return res.status(400).json({
-        errors: error.errors.map((error) => error.message),
-      });
-    }
+    handleValidationError(error, res);
     next(error);
   }
 });
@@ -63,9 +59,7 @@ authorsRouter.post("/", async function validateBody(req, res, next) {
 authorsRouter.get("/:id", parseID, async function getAuthor(req, res, next) {
   try {
     const author = await Author.findByPk(res.locals.id, { attributes });
-    if (!author) {
-      return res.status(404).json({ author: null });
-    }
+    if (!author) return res.status(404).json({ author: null });
     return res.json({ author });
   } catch (error) {
     next(error);
@@ -88,8 +82,9 @@ authorsRouter.put("/:id", parseID, async function validateBody(req, res, next) {
       },
       returning: true,
     });
-    return res.json({ author: updatedAuthorArray[0] });
+    return res.json({ author: updatedAuthorArray[0] ?? null });
   } catch (error) {
+    handleValidationError(error, res);
     next(error);
   }
 });

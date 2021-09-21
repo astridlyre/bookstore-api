@@ -31,3 +31,11 @@ export function parseID(req, res, next) {
     return next();
   }
 }
+
+export function handleValidationError(error, res) {
+  if (error.name === "SequelizeValidationError") {
+    return res.status(400).json({
+      errors: error.errors.map((error) => error.message),
+    });
+  }
+}

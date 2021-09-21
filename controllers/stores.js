@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Address, PhoneNumber, Store } from "../models/index.js";
-import { parseID } from "../middleware/misc.js";
+import { handleValidationError, parseID } from "../middleware/misc.js";
 import { validateCreateStore, validateUpdateStore } from "../schema/stores.js";
 import { validateGetBooksQuery } from "../schema/books.js";
 import { formatError } from "../schema/index.js";
@@ -57,6 +57,7 @@ storesRouter.post("/", function validateBody(req, res, next) {
     });
     return res.status(201).json({ store: result });
   } catch (error) {
+    handleValidationError(error, res);
     next(error);
   }
 });
@@ -65,7 +66,7 @@ storesRouter.post("/", function validateBody(req, res, next) {
 storesRouter.get("/:id", parseID, async function getStore(req, res, next) {
   try {
     const store = await Store.findByPk(res.locals.id, { attributes, include });
-    if (!store) return res.status(404).json({ store: {} });
+    if (!store) return res.status(404).json({ store: null });
     return res.json({ store });
   } catch (error) {
     next(error);
@@ -103,8 +104,10 @@ storesRouter.put("/:id", parseID, function validateBody(req, res, next) {
       attributes,
       include,
     });
+    if (!updatedStore) return res.status(404).json({ store: null });
     return res.json({ store: updatedStore });
   } catch (error) {
+    handleValidationError(error, res);
     next(error);
   }
 });

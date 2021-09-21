@@ -10,8 +10,8 @@ const base = {
       type: "array",
       items: { type: "integer" },
     },
-    website: { type: "string" },
-    imageUrl: { type: "string" },
+    website: { type: "string", format: "uri" },
+    imageUrl: { type: "string", format: "uri" },
   },
 };
 

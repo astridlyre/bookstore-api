@@ -1,5 +1,9 @@
 import Ajv from "ajv";
+import addFormats from "ajv-formats";
+import { validateIsbn } from "./isbn.js";
 const ajv = new Ajv({ allErrors: true });
+addFormats(ajv);
+ajv.addFormat("isbn", { type: "string", validate: validateIsbn });
 
 export default function createValidator(schema) {
   return ajv.compile(schema);

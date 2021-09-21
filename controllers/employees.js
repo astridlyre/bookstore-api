@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Address, Employee, PhoneNumber } from "../models/index.js";
-import { parseID } from "../middleware/misc.js";
+import { handleValidationError, parseID } from "../middleware/misc.js";
 import { createGetEmployeesQuery } from "../lib/queries.js";
 import { formatError } from "../schema/index.js";
 import {
@@ -68,6 +68,7 @@ employeesRouter.post("/", function validateBody(req, res, next) {
     });
     return res.status(201).json({ employee: result });
   } catch (error) {
+    handleValidationError(error, res);
     next(error);
   }
 });
@@ -82,7 +83,7 @@ employeesRouter.get(
         attributes,
         include,
       });
-      if (!employee) return res.status(404).json({ employee: {} });
+      if (!employee) return res.status(404).json({ employee: null });
       return res.json({ employee });
     } catch (error) {
       next(error);
@@ -118,12 +119,14 @@ employeesRouter.put("/:id", parseID, function validateBody(req, res, next) {
       );
     }
     await Promise.all(updates);
-    const result = await Employee.findByPk(res.locals.id, {
+    const updatedEmployee = await Employee.findByPk(res.locals.id, {
       attributes,
       include,
     });
-    return res.json({ employee: result });
+    if (!updatedEmployee) return res.status(404).json({ employee: null });
+    return res.json({ employee: updatedEmployee });
   } catch (error) {
+    handleValidationError(error, res);
     next(error);
   }
 });

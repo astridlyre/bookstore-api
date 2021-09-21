@@ -4,7 +4,7 @@ const base = {
   type: "object",
   properties: {
     title: { type: "string" },
-    isbn: { type: "string" },
+    isbn: { type: "string", format: "isbn" },
     genre: { type: "string" },
     description: { type: "string" },
     price: { type: "integer" },

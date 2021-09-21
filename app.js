@@ -11,6 +11,7 @@ import rateLimiter from "./middleware/rateLimiter.js";
 import {
   authorsRouter,
   booksRouter,
+  clientsRouter,
   employeesRouter,
   pingRouter,
   storesRouter,
@@ -34,6 +35,7 @@ export default function buildServer() {
   app.use("/ping", pingRouter);
   app.use("/authors", authorsRouter);
   app.use("/books", booksRouter);
+  app.use("/clients", clientsRouter);
   app.use("/employees", employeesRouter);
   app.use("/stores", storesRouter);
   app.use(unknownEndpoint);

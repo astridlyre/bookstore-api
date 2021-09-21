@@ -9,6 +9,7 @@ import { testPing } from "./ping/index.js";
 import { testThrowError, testUnknownEndpoint } from "./misc/index.js";
 import {
   testCreateBook,
+  testCreateBookWithInvalidISBN,
   testCreateBookWithMissingProperties,
   testCreateBookWithMissingTitle,
   testGetBook,
@@ -56,6 +57,13 @@ import {
   testGetEmployeesSortByLastNameDesc,
   testUpdateEmployee,
 } from "./employees/index.js";
+import {
+  testCreateClient,
+  testGetClient,
+  testGetClients,
+  testGetInvalidClient,
+  testUpdateClient,
+} from "./clients/index.js";
 
 chai.use(chaiHttp);
 
@@ -143,6 +151,10 @@ describe("Bookstore API", function () {
 
     it("Should not create book with missing properties", function (done) {
       testCreateBookWithMissingProperties(chai, server, done);
+    });
+
+    it("Should not create book with invalid ISBN", function (done) {
+      testCreateBookWithInvalidISBN(chai, server, done);
     });
 
     it("Should return a single book by ID", function (done) {
@@ -269,6 +281,28 @@ describe("Bookstore API", function () {
 
     it("Should not create an employee with missing fields", function (done) {
       testCreateEmployeeWithMissingFields(chai, server, done);
+    });
+  });
+
+  describe("Clients API", function () {
+    it("Should return a list of clients", function (done) {
+      testGetClients(chai, server, done);
+    });
+
+    it("Should create a new client", function (done) {
+      testCreateClient(chai, server, done);
+    });
+
+    it("Should get a single client by ID", function (done) {
+      testGetClient(chai, server, done);
+    });
+
+    it("Should update a client", function (done) {
+      testUpdateClient(chai, server, done);
+    });
+
+    it("Should return null if client not found", function (done) {
+      testGetInvalidClient(chai, server, done);
     });
   });
 });
