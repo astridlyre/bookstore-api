@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { Book, Client, Review } from "../models/index.js";
+import { Author, Book, Client, Review } from "../models/index.js";
 import Sequelize from "sequelize";
 import { handleValidationError, parseID } from "../middleware/misc.js";
 import { validateCreateBook, validateUpdateBook } from "../schema/books.js";
 import { formatError } from "../schema/index.js";
 import { createGetBooksQuery } from "../lib/queries.js";
-import { bookAttributes } from "../lib/attributes.js";
+import { authorAttributes, bookAttributes } from "../lib/attributes.js";
 
 const booksRouter = Router();
 
@@ -44,6 +44,12 @@ booksRouter.post("/", async function validateBody(req, res, next) {
 }, async function createBook(req, res, next) {
   try {
     const newBook = await Book.create(req.body);
+    if (req.body.authors) {
+      const authors = await Promise.all(
+        req.body.authors.map((id) => Author.findByPk(id)),
+      );
+      await newBook.addAuthors(authors);
+    }
     return res.status(201).json({ book: newBook });
   } catch (error) {
     handleValidationError(error, res);
@@ -87,17 +93,23 @@ booksRouter.put("/:id", parseID, async function validateBody(req, res, next) {
   }
 });
 
-// GET => Returns the author(s) of a specific book (TODO)
+// GET => Returns the author(s) of a specific book
 booksRouter.get(
   "/:id/authors",
   parseID,
   async function getBookAuthors(req, res, next) {
     try {
-      const book = await Book.findByPk(res.locals.id);
+      const book = await Book.findByPk(res.locals.id, {
+        include: [{
+          model: Author,
+          attributes: authorAttributes,
+          through: { attributes: [] },
+        }],
+      });
       if (!book) {
         return res.status(404).json({ book: null });
       }
-      return res.json({ book });
+      return res.json({ authors: book.authors });
     } catch (error) {
       next(error);
     }

@@ -8,16 +8,7 @@ import {
   unknownEndpoint,
 } from "./middleware/misc.js";
 import rateLimiter from "./middleware/rateLimiter.js";
-import {
-  authorsRouter,
-  booksRouter,
-  clientsRouter,
-  employeesRouter,
-  pingRouter,
-  reviewsRouter,
-  salesRouter,
-  storesRouter,
-} from "./controllers/index.js";
+import controllers from "./controllers/index.js";
 
 export default function buildServer() {
   const app = express();
@@ -34,14 +25,9 @@ export default function buildServer() {
   }
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-  app.use("/ping", pingRouter);
-  app.use("/authors", authorsRouter);
-  app.use("/books", booksRouter);
-  app.use("/clients", clientsRouter);
-  app.use("/employees", employeesRouter);
-  app.use("/sales", salesRouter);
-  app.use("/stores", storesRouter);
-  app.use("/reviews", reviewsRouter);
+  Object.entries(controllers).forEach(([url, controller]) =>
+    app.use(url, controller)
+  );
   app.use(unknownEndpoint);
   app.use(errorHandler);
   return app;

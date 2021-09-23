@@ -132,3 +132,16 @@ export function testGetAuthorsPerPageAndPageSortByLastName(chai, server, done) {
     },
   );
 }
+
+export function testGetAuthorWithBookGenre(chai, server, done) {
+  chai.request(server).get("/authors?genre=childrens").end(
+    (err, res) => {
+      if (err) throw err;
+      expect(res.status).to.equal(200);
+      expect(res.body.authors).to.be.a("array");
+      expect(res.body.authors.length).to.equal(1);
+      expect(res.body.authors[0].lastName).to.equal("Legge");
+      done();
+    },
+  );
+}

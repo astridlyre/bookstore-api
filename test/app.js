@@ -40,6 +40,7 @@ import {
   testGetAuthorsSortByFirstNameAsc,
   testGetAuthorsSortByIDDesc,
   testGetAuthorsSortByLastNameDesc,
+  testGetAuthorWithBookGenre,
   testGetNonExistantAuthor,
   testUpdateAuthor,
 } from "./authors/index.js";
@@ -239,6 +240,10 @@ describe("Bookstore API", function () {
     it("Should return null if not getting an exiting author", function (done) {
       testGetNonExistantAuthor(chai, server, done);
     });
+
+    /* it("Should allow filtering author's by book genre", function (done) {
+      testGetAuthorWithBookGenre(chai, server, done);
+    }); */
   });
 
   describe("Stores API", function () {

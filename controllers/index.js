@@ -7,13 +7,13 @@ import storesRouter from "./stores.js";
 import salesRouter from "./sales.js";
 import reviewsRouter from "./reviews.js";
 
-export {
-  authorsRouter,
-  booksRouter,
-  clientsRouter,
-  employeesRouter,
-  pingRouter,
-  reviewsRouter,
-  salesRouter,
-  storesRouter,
+export default {
+  "/authors": authorsRouter,
+  "/books": booksRouter,
+  "/clients": clientsRouter,
+  "/employees": employeesRouter,
+  "/ping": pingRouter,
+  "/reviews": reviewsRouter,
+  "/sales": salesRouter,
+  "/stores": storesRouter,
 };

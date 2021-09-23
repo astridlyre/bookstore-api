@@ -19,6 +19,7 @@ export function testCreateBook(chai, server, done) {
     genre: "childrens",
     description: "Learn to count the fun way, with Buggsy!",
     price: 789,
+    authors: [1],
   };
   chai.request(server).post("/books").type("json").send(newBook).end(
     (err, res) => {
