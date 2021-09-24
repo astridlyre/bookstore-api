@@ -26,6 +26,7 @@ import {
   testGetBooksWithPerPage,
   testGetBooksWithPerPageAndPage,
   testGetBooksWithPerPageAndPageAndSortByIdDesc,
+  testGetBookWithInvalidId,
   testGetNonExistantBook,
   testSearchBook,
   testUpdateBook,
@@ -171,6 +172,10 @@ describe("Bookstore API", function () {
 
     it("Should return not found if book doesn't exist", function (done) {
       testGetNonExistantBook(chai, server, done);
+    });
+
+    it("Should throw an error if invalid ID", function (done) {
+      testGetBookWithInvalidId(chai, server, done);
     });
 
     it("Should update a book", function (done) {

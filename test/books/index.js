@@ -195,6 +195,16 @@ export function testGetNonExistantBook(chai, server, done) {
   });
 }
 
+export function testGetBookWithInvalidId(chai, server, done) {
+  chai.request(server).get("/books/cats").end((err, res) => {
+    if (err) throw err;
+    expect(res.status).to.equal(400);
+    expect(res.body.errors).to.be.a("array");
+    expect(res.body.errors[0].message).to.equal("Invalid parameter ID");
+    done();
+  });
+}
+
 export function testGetBooksWithPerPage(chai, server, done) {
   chai.request(server).get("/books?perpage=1").end((err, res) => {
     if (err) throw err;

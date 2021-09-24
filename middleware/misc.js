@@ -25,7 +25,9 @@ export function throwTestError(req, res, next) {
 export function parseID(req, res, next) {
   const id = Number(req.params.id);
   if (isNaN(id)) {
-    return next(new Error(`Invalid ID parameter ${req.params.id}`));
+    return res.status(400).json({
+      errors: [{ message: "Invalid parameter ID" }],
+    });
   } else {
     res.locals.id = id;
     return next();
